@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'player.dart';
 import 'utils.dart';
+import 'scoreboard_screen.dart';
 import 'gamebidder_screen.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 
-class GameResultScreen extends StatelessWidget {
+class GameResultScreen extends StatefulWidget {
   final String boardID;
   final int gameID;
   final List<String> players;
+  final List<List<int>> scoreboard;
   final String bidder;
   final int bid;
   final String trump;
@@ -19,6 +21,7 @@ class GameResultScreen extends StatelessWidget {
     this.boardID,
     this.gameID,
     this.players,
+    this.scoreboard,
     this.bidder,
     this.bid,
     this.trump,
@@ -30,6 +33,14 @@ class GameResultScreen extends StatelessWidget {
   bool hasBidderWon() => ((350 - oppScore) >= bid);
 
   @override
+  State<GameResultScreen> createState() => _GameResultScreenState();
+}
+
+class _GameResultScreenState extends State<GameResultScreen> {
+  bool _isScoreboardUpdated = false;
+  List<List<int>> _updatedScoreboard = [];
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
@@ -38,6 +49,7 @@ class GameResultScreen extends StatelessWidget {
   }
 
   Widget buildAppBar(BuildContext context) {
+    int gameID = widget.gameID;
     return AppBar(
       leading: Icon(CommunityMaterialIcons.cards),
       title: Text("Game $gameID: Result"),
@@ -57,8 +69,9 @@ class GameResultScreen extends StatelessWidget {
           _buildScores(context),
           _buildOpposition(context),
           buildDivider(context),
-          _buildNewGameButton(context),
-          // buildScoreboardButton(context),
+          _buildOptions(context),
+          // _buildNewGameButton(context),
+          // _buildScoreboardButton(context),
         ],
       ),
     );
@@ -95,7 +108,7 @@ class GameResultScreen extends StatelessWidget {
                 // margin: const EdgeInsets.only(right: 16.0),
                 child: CircleAvatar(
                   radius: 25,
-                  child: Text(bidder[0] + bidder[1]),
+                  child: Text(widget.bidder[0] + widget.bidder[1]),
                 ),
               ),
               Container(
@@ -105,14 +118,14 @@ class GameResultScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Text(
-                  bid.toString(),
+                  widget.bid.toString(),
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              Container(child: getTrumpIcon(trump)),
+              Container(child: getTrumpIcon(widget.trump)),
             ],
           ),
         ),
@@ -127,7 +140,7 @@ class GameResultScreen extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(),
         borderRadius: BorderRadius.circular(5.0),
-        color: hasBidderWon() ? Colors.lightGreen[400] : Colors.red[200],
+        color: widget.hasBidderWon() ? Colors.lightGreen[400] : Colors.red[200],
       ),
       child: _buildBidderMemberLayout(context),
     );
@@ -148,7 +161,7 @@ class GameResultScreen extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                (350 - oppScore).toString(),
+                (350 - widget.oppScore).toString(),
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
             ),
@@ -163,7 +176,7 @@ class GameResultScreen extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                oppScore.toString(),
+                widget.oppScore.toString(),
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
             ),
@@ -194,8 +207,8 @@ class GameResultScreen extends StatelessWidget {
   Widget _buildBidderMemberLayout(BuildContext context) {
     List<PlayerBox> membersWidget = [];
 
-    for (int i = 0; i < biddersTeam.length; i++) {
-      membersWidget.add(PlayerBox(biddersTeam[i]));
+    for (int i = 0; i < widget.biddersTeam.length; i++) {
+      membersWidget.add(PlayerBox(widget.biddersTeam[i]));
     }
 
     return Row(
@@ -212,7 +225,7 @@ class GameResultScreen extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(),
         borderRadius: BorderRadius.circular(5.0),
-        color: hasBidderWon() ? Colors.red[200] : Colors.lightGreen[400],
+        color: widget.hasBidderWon() ? Colors.red[200] : Colors.lightGreen[400],
       ),
       child: _buildOppositionLayout(context),
     );
@@ -220,14 +233,25 @@ class GameResultScreen extends StatelessWidget {
 
   Widget _buildOppositionLayout(BuildContext context) {
     List<PlayerBox> membersWidget = [];
-    for (int i = 0; i < opposition.length; i++) {
-      membersWidget.add(PlayerBox(opposition[i]));
+    for (int i = 0; i < widget.opposition.length; i++) {
+      membersWidget.add(PlayerBox(widget.opposition[i]));
     }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: membersWidget,
+    );
+  }
+
+  Widget _buildOptions(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildNewGameButton(context),
+        _buildScoreboardButton(context),
+      ],
     );
   }
 
@@ -238,17 +262,22 @@ class GameResultScreen extends StatelessWidget {
       disabledColor: Colors.white,
       disabledTextColor: Colors.green,
       child: Text(
-        "Next",
+        "New Game",
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       onPressed: () {
+        if (!_isScoreboardUpdated) {
+          _updateScoreboard();
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => GameBidderScreen(
-                  boardID: boardID,
-                  gameID: gameID + 1,
-                  players: players,
+                  boardID: widget.boardID,
+                  gameID: widget.gameID + 1,
+                  players: widget.players,
+                  scoreboard: _updatedScoreboard,
                 ),
           ),
         );
@@ -256,9 +285,69 @@ class GameResultScreen extends StatelessWidget {
     );
   }
 
-  // Widget buildScoreboardButton(BuildContext context) {
-  //   return Container(
-  //     child: _buildScoreboardLayout(context),
-  //   );
-  // }
+  void _updateScoreboard() {
+    if (!_isScoreboardUpdated) {
+      print("updating scoreboard");
+      int bidderPoints;
+      int bidderMemberPoints;
+      int oppositionMemberPoints;
+
+      if (widget.oppScore == 0) {
+        bidderPoints = 350;
+        bidderMemberPoints = 350;
+        oppositionMemberPoints = 0;
+      } else if (widget.hasBidderWon()) {
+        bidderPoints = widget.bid;
+        bidderMemberPoints = widget.bid ~/ widget.biddersTeam.length;
+        oppositionMemberPoints = 0;
+      } else {
+        bidderPoints = -widget.bid;
+        bidderMemberPoints = -(widget.bid ~/ widget.biddersTeam.length);
+        oppositionMemberPoints = widget.oppScore ~/ widget.opposition.length;
+      }
+
+      setState(() {
+        for (int i = 0; i < widget.players.length; i++) {
+          List<int> playerScore = widget.scoreboard[i];
+          if (widget.players[i] == widget.bidder) {
+            playerScore.add(bidderPoints);
+          } else if (widget.biddersTeam.contains(widget.players[i])) {
+            playerScore.add(bidderMemberPoints);
+          } else {
+            playerScore.add(oppositionMemberPoints);
+          }
+          _updatedScoreboard.add(playerScore);
+        }
+        _isScoreboardUpdated = true;
+      });
+    }
+  }
+
+  Widget _buildScoreboardButton(BuildContext context) {
+    return Container(
+      child: RaisedButton(
+        color: Colors.green,
+        textColor: Colors.white,
+        disabledColor: Colors.white,
+        disabledTextColor: Colors.green,
+        child: Text(
+          "Scoreboard",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        onPressed: () {
+          if (!_isScoreboardUpdated) {
+            _updateScoreboard();
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ScoreboardScreen(
+                    players: widget.players,
+                    scoreboard: _updatedScoreboard,
+                  ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

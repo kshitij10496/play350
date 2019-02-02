@@ -6,8 +6,10 @@ class GameBidderScreen extends StatefulWidget {
   final String boardID;
   final int gameID;
   final List<String> players;
+  final List<List<int>> scoreboard;
 
-  const GameBidderScreen({this.boardID, this.gameID, this.players});
+  const GameBidderScreen(
+      {this.boardID, this.gameID, this.players, this.scoreboard});
 
   @override
   State<GameBidderScreen> createState() => _GameBidderScreenState();
@@ -432,6 +434,7 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
                   boardID: widget.boardID,
                   gameID: widget.gameID,
                   players: widget.players,
+                  scoreboard: widget.scoreboard,
                   bidder: bidder,
                   bid: bid,
                   trump: trump,

@@ -8,6 +8,7 @@ class GamePlayScreen extends StatefulWidget {
   final String boardID;
   final int gameID;
   final List<String> players;
+  final List<List<int>> scoreboard;
 
   final String bidder;
   final int bid;
@@ -17,6 +18,7 @@ class GamePlayScreen extends StatefulWidget {
     this.boardID,
     this.gameID,
     this.players,
+    this.scoreboard,
     this.bidder,
     this.bid,
     this.trump,
@@ -328,6 +330,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
               boardID: widget.boardID,
               gameID: widget.gameID,
               players: widget.players,
+              scoreboard: widget.scoreboard,
               bidder: widget.bidder,
               bid: widget.bid,
               trump: widget.trump,

@@ -10,6 +10,7 @@ class PlayersScreen extends StatefulWidget {
 
 class _PlayersScreenState extends State<PlayersScreen> {
   List<String> _players = [];
+  final List<List<int>> _scoreboard = [];
   bool _isComposing = false;
   final TextEditingController _textController = new TextEditingController();
 
@@ -25,6 +26,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
               int n = _players.length;
               print("Created table with $n players");
               final boardID = _createTable();
+
+              for (int i = 0; i < n; i++) {
+                _scoreboard.add([]);
+              }
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -33,6 +39,7 @@ class _PlayersScreenState extends State<PlayersScreen> {
                       boardID: boardID,
                       gameID: 1,
                       players: _players,
+                      scoreboard: _scoreboard,
                     );
                   },
                 ),
