@@ -17,7 +17,7 @@ class GameBidderScreen extends StatefulWidget {
 
 class _GameBidderScreenState extends State<GameBidderScreen> {
   String bidder;
-  int bid;
+  int bid = 0;
   String trump;
   List<DropdownMenuItem> _playersItems;
 
@@ -30,7 +30,7 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
           children: [
             Container(
               padding: EdgeInsets.symmetric(horizontal: 5),
-              child: Icon(CommunityMaterialIcons.cards_diamond),
+              child: Icon(CommunityMaterialIcons.cards_club),
             ),
             Text("Clubs"),
           ],
@@ -125,12 +125,14 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
     return Scaffold(
       appBar: buildAppBar(context),
       body: buildBody(context),
+      resizeToAvoidBottomPadding: false,
     );
   }
 
   Widget buildAppBar(BuildContext context) {
     int gameID = widget.gameID;
     return AppBar(
+      backgroundColor: Theme.of(context).accentColor,
       leading: Icon(CommunityMaterialIcons.cards),
       title: Text("Game $gameID: Choose Bidder"),
     );
@@ -140,6 +142,7 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
     // Dropdown Menu with players
     // TextField with Bid
     return Container(
+      color: Theme.of(context).backgroundColor,
       padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,11 +166,14 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
       margin: EdgeInsets.only(top: 16.0),
       decoration: BoxDecoration(
         // This sets the color of the [DropdownButton] itself
-        color: Colors.grey[50],
+        // color: Colors.grey[50],
+        color: Theme.of(context).backgroundColor,
         border: Border.all(
-          color: Colors.grey[400],
+          color: Colors.grey[700],
           width: 1.0,
+          // color: Colors.black,
         ),
+        borderRadius: BorderRadius.circular(5),
       ),
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Theme(
@@ -177,6 +183,7 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
         ),
         child: DropdownButtonHideUnderline(
           child: ButtonTheme(
+            buttonColor: Theme.of(context).buttonColor,
             alignedDropdown: true,
             child: DropdownButton(
               items: _playersItems,
@@ -241,11 +248,13 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
       margin: EdgeInsets.only(top: 16.0),
       decoration: BoxDecoration(
         // This sets the color of the [DropdownButton] itself
-        color: Colors.grey[50],
+        color: Theme.of(context).backgroundColor,
         border: Border.all(
-          color: Colors.grey[400],
+          color: Colors.grey[700],
           width: 1.0,
+          // color: Colors.black,
         ),
+        borderRadius: BorderRadius.circular(5),
       ),
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Theme(
@@ -426,25 +435,28 @@ class _GameBidderScreenState extends State<GameBidderScreen> {
       color: Theme.of(context).buttonColor,
       child: Text("Play"),
       elevation: 5,
-      onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                print("Moved to Game Play: $bidder, $bid, $trump");
-                return GamePlayScreen(
-                  boardID: widget.boardID,
-                  gameID: widget.gameID,
-                  players: widget.players,
-                  scoreboard: widget.scoreboard,
-                  bidder: bidder,
-                  bid: bid,
-                  trump: trump,
-                );
-              },
-            ),
-          ),
+      onPressed: (bid != null && bid >= 0 && bid <= 350) ? _playGame : null,
     );
   }
 
+  void _playGame() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          print("Moved to Game Play: $bidder, $bid, $trump");
+          return GamePlayScreen(
+            boardID: widget.boardID,
+            gameID: widget.gameID,
+            players: widget.players,
+            scoreboard: widget.scoreboard,
+            bidder: bidder,
+            bid: bid,
+            trump: trump,
+          );
+        },
+      ),
+    );
+  }
   // Widget _buildBody(BuildContext context) {
   //   return StreamBuilder<QuerySnapshot>(
   //     stream: Firestore.instance

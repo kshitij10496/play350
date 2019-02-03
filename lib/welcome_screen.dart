@@ -60,16 +60,33 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Icon(CommunityMaterialIcons.cards_club),
-                Icon(CommunityMaterialIcons.cards_diamond, color: Colors.red),
-                Icon(CommunityMaterialIcons.cards_heart, color: Colors.red),
-                Icon(CommunityMaterialIcons.cards_spade),
+                Icon(
+                  CommunityMaterialIcons.cards_club,
+                  size: 40,
+                ),
+                Icon(
+                  CommunityMaterialIcons.cards_diamond,
+                  color: Colors.red,
+                  size: 40,
+                ),
+                Icon(
+                  CommunityMaterialIcons.cards_heart,
+                  color: Colors.red,
+                  size: 40,
+                ),
+                Icon(
+                  CommunityMaterialIcons.cards_spade,
+                  size: 40,
+                ),
               ],
             ),
           ),
           RaisedButton(
-            color: Theme.of(context).buttonColor,
-            splashColor: Theme.of(context).splashColor,
+            color: Colors.green,
+            textColor: Colors.white,
+            disabledColor: Colors.white,
+            disabledTextColor: Colors.green,
+            splashColor: Colors.limeAccent,
             onPressed: () {
               // Create a new document and move to new route
               print("Creating new table!");

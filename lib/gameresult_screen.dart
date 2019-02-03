@@ -43,6 +43,8 @@ class _GameResultScreenState extends State<GameResultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
+      resizeToAvoidBottomPadding: false,
       appBar: buildAppBar(context),
       body: buildBody(context),
     );
@@ -51,6 +53,7 @@ class _GameResultScreenState extends State<GameResultScreen> {
   Widget buildAppBar(BuildContext context) {
     int gameID = widget.gameID;
     return AppBar(
+      backgroundColor: Theme.of(context).accentColor,
       leading: Icon(CommunityMaterialIcons.cards),
       title: Text("Game $gameID: Result"),
     );
@@ -134,15 +137,38 @@ class _GameResultScreenState extends State<GameResultScreen> {
   }
 
   Widget _buildBidderTeam(BuildContext context) {
-    return Container(
-      height: 80,
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(),
-        borderRadius: BorderRadius.circular(5.0),
-        color: widget.hasBidderWon() ? Colors.lightGreen[400] : Colors.red[200],
-      ),
-      child: _buildBidderMemberLayout(context),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(5),
+          height: 70,
+          padding: EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(5.0),
+            color: widget.hasBidderWon() ? Colors.green[400] : Colors.red[200],
+          ),
+          child: _buildBidderMemberLayout(context),
+        ),
+        Container(
+          margin: EdgeInsets.all(5),
+          width: 150,
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Center(
+            child: Text(
+              (350 - widget.oppScore).toString() +
+                  (widget.hasBidderWon() ? "🎉" : "🙈"),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -153,53 +179,15 @@ class _GameResultScreenState extends State<GameResultScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
-            width: 100,
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(5.0),
-            ),
+            width: 50,
             child: Center(
               child: Text(
-                (350 - widget.oppScore).toString(),
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          _buildVLayout(context),
-          Container(
-            width: 100,
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            child: Center(
-              child: Text(
-                widget.oppScore.toString(),
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                "v",
+                style: TextStyle(fontSize: 20),
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildVLayout(BuildContext context) {
-    return Container(
-      width: 50,
-      padding: EdgeInsets.all(8),
-      // decoration: BoxDecoration(
-      //   border: Border.all(),
-      //   borderRadius: BorderRadius.circular(5.0),
-      //   color: Colors.red,
-      // ),
-      child: Center(
-        child: Text(
-          "v",
-          style: TextStyle(fontSize: 20),
-        ),
       ),
     );
   }
@@ -219,15 +207,40 @@ class _GameResultScreenState extends State<GameResultScreen> {
   }
 
   Widget _buildOpposition(BuildContext context) {
-    return Container(
-      height: 80,
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(),
-        borderRadius: BorderRadius.circular(5.0),
-        color: widget.hasBidderWon() ? Colors.red[200] : Colors.lightGreen[400],
-      ),
-      child: _buildOppositionLayout(context),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(5),
+          width: 150,
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Center(
+            child: Text(
+              widget.oppScore.toString() +
+                  (widget.hasBidderWon() ? "🙈" : "🎉"),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.all(5),
+          height: 70,
+          padding: EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: BorderRadius.circular(5.0),
+            color: widget.hasBidderWon()
+                ? Colors.red[200]
+                : Colors.lightGreen[400],
+          ),
+          child: _buildOppositionLayout(context),
+        ),
+      ],
     );
   }
 
@@ -261,6 +274,7 @@ class _GameResultScreenState extends State<GameResultScreen> {
       textColor: Colors.white,
       disabledColor: Colors.white,
       disabledTextColor: Colors.green,
+      splashColor: Colors.limeAccent,
       child: Text(
         "New Game",
         style: TextStyle(fontWeight: FontWeight.bold),
@@ -269,6 +283,9 @@ class _GameResultScreenState extends State<GameResultScreen> {
         if (!_isScoreboardUpdated) {
           _updateScoreboard();
         }
+
+        // TODO: Replace this via named route
+        Navigator.pop(context);
 
         Navigator.push(
           context,
@@ -308,15 +325,21 @@ class _GameResultScreenState extends State<GameResultScreen> {
 
       setState(() {
         for (int i = 0; i < widget.players.length; i++) {
-          List<int> playerScore = widget.scoreboard[i];
-          if (widget.players[i] == widget.bidder) {
-            playerScore.add(bidderPoints);
-          } else if (widget.biddersTeam.contains(widget.players[i])) {
-            playerScore.add(bidderMemberPoints);
+          List<int> playerScores = widget.scoreboard[i];
+          String player = widget.players[i];
+          int playerPoints = 0;
+          if (player == widget.bidder) {
+            playerPoints = bidderPoints;
+          } else if (widget.biddersTeam.contains(player)) {
+            playerPoints = bidderMemberPoints;
+          } else if (widget.opposition.contains(player)) {
+            playerPoints = oppositionMemberPoints;
           } else {
-            playerScore.add(oppositionMemberPoints);
+            print("$player belongs to no team");
           }
-          _updatedScoreboard.add(playerScore);
+          print("updating $player: $playerPoints");
+          playerScores.add(playerPoints);
+          _updatedScoreboard.add(playerScores);
         }
         _isScoreboardUpdated = true;
       });
@@ -330,6 +353,7 @@ class _GameResultScreenState extends State<GameResultScreen> {
         textColor: Colors.white,
         disabledColor: Colors.white,
         disabledTextColor: Colors.green,
+        splashColor: Colors.limeAccent,
         child: Text(
           "Scoreboard",
           style: TextStyle(fontWeight: FontWeight.bold),

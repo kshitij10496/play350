@@ -54,8 +54,10 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
       appBar: buildAppBar(context),
       body: buildBody(context),
+      resizeToAvoidBottomPadding: false,
       floatingActionButton: _buildNextButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -64,6 +66,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   Widget buildAppBar(BuildContext context) {
     int gameID = widget.gameID;
     return AppBar(
+      backgroundColor: Theme.of(context).accentColor,
       leading: Icon(CommunityMaterialIcons.cards),
       title: Text("Game $gameID: Play"),
     );
@@ -211,11 +214,11 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
       return Container(
         width: 50,
         padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: BorderRadius.circular(5.0),
-          color: Colors.red,
-        ),
+        // decoration: BoxDecoration(
+        //   border: Border.all(),
+        //   borderRadius: BorderRadius.circular(5.0),
+        // color: Colors.red,
+        // ),
         child: Center(
           child: Text(
             "v",
@@ -233,14 +236,13 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
         for (int i = 0; i < opposition.length; i++) {
           membersWidget.add(PlayerDragBox(opposition[i]));
         }
-
         return Container(
           height: 80,
           padding: EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             border: Border.all(),
             borderRadius: BorderRadius.circular(5.0),
-            color: Theme.of(context).backgroundColor,
+            color: Colors.orangeAccent,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -313,17 +315,22 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
       textColor: Colors.white,
       disabledColor: Colors.white,
       disabledTextColor: Colors.green,
+      splashColor: Colors.limeAccent,
       child: Text(
         "Next",
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
-      onPressed: (undecidedPlayers.length == 0 && oppScore != 0)
-          ? _pressNextButton
-          : null,
+      onPressed:
+          (undecidedPlayers.length == 0 && oppScore >= 0 && oppScore <= 350)
+              ? _pressNextButton
+              : null,
     );
   }
 
   void _pressNextButton() {
+    Navigator.pop(context);
+    Navigator.pop(context);
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => GameResultScreen(

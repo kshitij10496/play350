@@ -11,13 +11,13 @@ class GameApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData _gameTheme = ThemeData(
       primarySwatch: Colors.green,
-      // fontFamily: 'Comic Sans',
-      // textTheme: Theme.of(context).textTheme.apply(
-      //       bodyColor: Colors.grey,
-      //       displayColor: Colors.black,
-      //     ),
-      // primaryColor: Colors.grey[500],
-      // textSelectionColor: Colors.green[500],
+      fontFamily: 'Raleway',
+      textTheme: Theme.of(context).textTheme.apply(
+            bodyColor: Colors.black,
+            displayColor: Colors.grey[600],
+          ),
+      primaryColor: Colors.grey[500],
+      textSelectionColor: Colors.green[500],
       // TODO: Add game icon theme
       // TODO: Add game font
     );

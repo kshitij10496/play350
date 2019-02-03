@@ -17,58 +17,69 @@ class _PlayersScreenState extends State<PlayersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Add Players"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: () {
-              int n = _players.length;
-              print("Created table with $n players");
-              final boardID = _createTable();
-
-              for (int i = 0; i < n; i++) {
-                _scoreboard.add([]);
-              }
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return GameBidderScreen(
-                      boardID: boardID,
-                      gameID: 1,
-                      players: _players,
-                      scoreboard: _scoreboard,
-                    );
-                  },
-                ),
-              );
-            },
-          )
-        ],
-      ),
-      body: _buildBody(),
+      appBar: buildAppBar(context),
+      body: buildBody(context),
     );
   }
 
-  Widget _buildBody() {
-    return Column(
-      children: <Widget>[
-        Flexible(
-          fit: FlexFit.loose,
-          child: ListView.builder(
-            padding: EdgeInsets.all(20.0),
-            itemCount: _players.length,
-            itemBuilder: _playerTileBuilder,
-          ),
-        ),
-        Divider(height: 1.0),
-        Container(
-          decoration: new BoxDecoration(color: Theme.of(context).cardColor),
-          child: _buildTextComposer(),
-        ),
+  Widget buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Theme.of(context).accentColor,
+      title: Text("Add Players"),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.check),
+          disabledColor: Colors.red,
+          onPressed: (_players.length > 0) ? _startPlaying : null,
+        )
       ],
+    );
+  }
+
+  void _startPlaying() {
+    int n = _players.length;
+    print("Created table with $n players");
+    final boardID = _createTable();
+
+    for (int i = 0; i < n; i++) {
+      _scoreboard.add([]);
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return GameBidderScreen(
+            boardID: boardID,
+            gameID: 1,
+            players: _players,
+            scoreboard: _scoreboard,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return Container(
+      color: Theme.of(context).backgroundColor,
+      child: Column(
+        children: <Widget>[
+          Flexible(
+            fit: FlexFit.loose,
+            child: ListView.builder(
+              padding: EdgeInsets.all(20.0),
+              itemCount: _players.length,
+              itemBuilder: _playerTileBuilder,
+            ),
+          ),
+          Divider(height: 20.0),
+          Container(
+            decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+            child: _buildTextComposer(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -91,21 +102,40 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   Widget _playerTileBuilder(BuildContext context, int index) {
-    final i = index + 1;
     final name = _players[index];
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-      child: ListTile(
-        leading: Container(
-          margin: const EdgeInsets.only(right: 16.0),
-          child: new CircleAvatar(
-            child: new Text(name[0] + name[1]),
+    return Dismissible(
+      key: Key(name),
+      onDismissed: (direction) {
+        // Remove the item from our data source.
+        setState(() {
+          _players.removeAt(index);
+        });
+
+        // Then show a snackbar!
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text("$name has been from the board! 🙁")));
+      },
+      background: Container(color: Colors.red),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Container(
+          margin: EdgeInsets.only(right: 16.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(5.0),
+            color: Colors.yellow,
+          ),
+          child: ListTile(
+            leading: Container(
+              margin: EdgeInsets.only(right: 16.0),
+              child: new CircleAvatar(
+                child: new Text(name[0] + name[1]),
+                radius: 24,
+              ),
+            ),
+            title: Text(name),
           ),
         ),
-        title: Text(name),
       ),
     );
   }

@@ -23,41 +23,90 @@ class ScoreboardScreen extends StatelessWidget {
   }
 
   Widget buildBody(BuildContext context) {
-    List<TableRow> rows = [];
-
+    List<Row> rows = [];
     // Add PlayerNames row
-    List<Container> namesRow = [];
+    List<Container> namesRow = [
+      Container(
+        width: 50,
+        height: 40,
+      )
+    ];
     for (int i = 0; i < players.length; i++) {
-      namesRow.add(Container(child: Text(players[i].toString())));
+      namesRow.add(
+        Container(
+          width: 50,
+          height: 40,
+          child: Text(
+            players[i].toString(),
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
     }
-    rows.add(TableRow(children: namesRow));
+    rows.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: namesRow));
 
     int games = scoreboard[0].length;
     // Add Gamewise score row
     for (int i = 0; i < games; i++) {
-      List<Container> cells = [];
+      List<Container> cells = [Container(child: Text((i + 1).toString()))];
       for (int j = 0; j < scoreboard.length; j++) {
         int gamePlayerScore = scoreboard[j][i]; // Player jth score in Game i
-        cells.add(Container(child: Text(gamePlayerScore.toString())));
+        cells.add(
+          Container(
+            // decoration: BoxDecoration(
+            //   border: Border.all(color: Colors.grey),
+            //   borderRadius: BorderRadius.circular(5.0),
+            // ),
+            child: Text(gamePlayerScore.toString()),
+          ),
+        );
       }
-      rows.add(TableRow(children: cells));
+      rows.add(Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: cells));
     }
 
     // Add Total sum row
-    List<Container> sumRow = [];
+    List<Container> sumRow = [
+      Container(
+        child: Text(
+          "Total",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+    ];
     for (int i = 0; i < players.length; i++) {
       List<int> playerScore = scoreboard[i];
       int playerSum = 0;
       for (int j = 0; j < playerScore.length; j++) {
         playerSum = playerSum + playerScore[j];
       }
-      sumRow.add(Container(child: Text(playerSum.toString())));
+      sumRow.add(
+        Container(
+          child: Text(
+            playerSum.toString(),
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
     }
-    rows.add(TableRow(children: sumRow));
+    rows.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: sumRow));
 
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, bottom: 48),
-      child: Table(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      padding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
+      child: ListView(
         children: rows,
       ),
     );
