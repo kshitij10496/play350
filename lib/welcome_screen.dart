@@ -6,7 +6,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context),
+      // appBar: buildAppBar(context),
       body: buildBody(context),
     );
   }
@@ -97,6 +97,32 @@ class WelcomeScreen extends StatelessWidget {
               "New Table",
               style: TextStyle(fontSize: 20.0),
             ),
+          ),
+          Container(
+            margin: EdgeInsets.all(8),
+            padding: EdgeInsets.all(8),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text("Made with ❤️"),
+                        )
+                      ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.copyright),
+                        Center(
+                          child: Text("Kshitij"),
+                        )
+                      ]),
+                ]),
           )
         ],
       ),
